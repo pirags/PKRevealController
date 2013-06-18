@@ -105,6 +105,10 @@ extern NSString * const PKRevealControllerRecognizesPanningOnFrontViewKey;
 extern NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey;
 
 /*
+ * List of notifications that are sent out when presented view will or did change.
+ */
+
+/*
  * Notification sent out after left view has been presented.
  */
 extern NSString * const PKRevealControllerDidPresentLeftViewNotification;
