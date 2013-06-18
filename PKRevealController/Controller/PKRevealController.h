@@ -104,6 +104,37 @@ extern NSString * const PKRevealControllerRecognizesPanningOnFrontViewKey;
  */
 extern NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey;
 
+/*
+ * Notification sent out after left view has been presented.
+ */
+extern NSString * const PKRevealControllerDidPresentLeftViewNotification;
+
+/*
+ * Notification sent out after right view has been presented.
+ */
+extern NSString * const PKRevealControllerDidPresentRightViewNotification;
+
+/*
+ * Notification sent out after front view has been presented.
+ */
+extern NSString * const PKRevealControllerDidPresentFrontViewNotification;
+
+/*
+ * Notification sent out before left view presentation.
+ */
+extern NSString * const PKRevealControllerWillPresentLeftViewNotification;
+
+/*
+ * Notification sent out before right view presentation.
+ */
+extern NSString * const PKRevealControllerWillPresentRightViewNotification;
+
+/*
+ * Notification sent out before front view presentation.
+ */
+extern NSString * const PKRevealControllerWillPresentFrontViewNotification;
+
+
 typedef void(^PKDefaultCompletionHandler)(BOOL finished);
 typedef void(^PKDefaultErrorHandler)(NSError *error);
 
