@@ -60,6 +60,12 @@ NSString * const PKRevealControllerQuickSwipeToggleVelocityKey = @"PKRevealContr
 NSString * const PKRevealControllerDisablesFrontViewInteractionKey = @"PKRevealControllerDisablesFrontViewInteractionKey";
 NSString * const PKRevealControllerRecognizesPanningOnFrontViewKey = @"PKRevealControllerRecognizesPanningOnFrontViewKey";
 NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKRevealControllerRecognizesResetTapOnFrontViewKey";
+NSString * const PKRevealControllerDidPresentLeftViewNotification = @"PKRevealControllerDidPresentLeftViewNotification";
+NSString * const PKRevealControllerDidPresentRightViewNotification = @"PKRevealControllerDidPresentRightViewNotification";
+NSString * const PKRevealControllerDidPresentFrontViewNotification = @"PKRevealControllerDidPresentFrontViewNotification";
+NSString * const PKRevealControllerWillPresentLeftViewNotification = @"PKRevealControllerWillPresentLeftViewNotification";
+NSString * const PKRevealControllerWillPresentRightViewNotification = @"PKRevealControllerWillPresentRightViewNotification";
+NSString * const PKRevealControllerWillPresentFrontViewNotification = @"PKRevealControllerWillPresentFrontViewNotification";
 
 #pragma mark - Initialization
 
@@ -953,6 +959,8 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
                             completion:(PKDefaultCompletionHandler)completion
 {
     __weak PKRevealController *weakSelf = self;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerWillPresentLeftViewNotification object:weakSelf];
     
     void (^showLeftViewBlock)(BOOL finished) = ^(BOOL finished)
     {
@@ -971,6 +979,9 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
              [weakSelf removeRightViewControllerFromHierarchy];
              [weakSelf updateResetTapGestureRecognizer];
              safelyExecuteCompletionBlockOnMainThread(completion, finished);
+             safelyExecuteBlockOnMainThread(^{
+                 [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerDidPresentLeftViewNotification object:weakSelf];
+             });
          }];
     };
     
@@ -993,6 +1004,8 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
                              completion:(PKDefaultCompletionHandler)completion
 {
     __weak PKRevealController *weakSelf = self;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerWillPresentRightViewNotification object:weakSelf];
     
     void (^showRightViewBlock)(BOOL finished) = ^(BOOL finished)
     {
@@ -1010,6 +1023,9 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
             weakSelf.state = PKRevealControllerFocusesRightViewController;
             [weakSelf updateResetTapGestureRecognizer];
             safelyExecuteCompletionBlockOnMainThread(completion, finished);
+            safelyExecuteBlockOnMainThread(^{
+                 [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerDidPresentRightViewNotification object:weakSelf];
+            });
         }];
     };
     
@@ -1032,6 +1048,8 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
                              completion:(PKDefaultCompletionHandler)completion
 {
     __weak PKRevealController *weakSelf = self;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerWillPresentFrontViewNotification object:weakSelf];
     
     [self setFrontViewFrame:[self frontViewFrameForCenter]
                    animated:animated
@@ -1046,6 +1064,9 @@ NSString * const PKRevealControllerRecognizesResetTapOnFrontViewKey = @"PKReveal
          [weakSelf removeLeftViewControllerFromHierarchy];
          [weakSelf updateResetTapGestureRecognizer];
          safelyExecuteCompletionBlockOnMainThread(completion, finished);
+         safelyExecuteBlockOnMainThread(^{
+             [[NSNotificationCenter defaultCenter] postNotificationName:PKRevealControllerDidPresentFrontViewNotification object:weakSelf];
+         });
      }];
 }
 
@@ -1491,6 +1512,26 @@ NS_INLINE void safelyExecuteCompletionBlockOnMainThread(PKDefaultCompletionHandl
     if ([NSThread isMainThread])
     {
         executeBlock();
+    }
+    else
+    {
+        dispatch_async(dispatch_get_main_queue(), executeBlock);
+    }
+}
+
+NS_INLINE void safelyExecuteBlockOnMainThread(void (^block)(void))
+{
+    void(^executeBlock)() = ^()
+    {
+        if (block != NULL)
+        {
+            block();
+        }
+    };
+
+    if ([NSThread isMainThread])
+    {
+        block();
     }
     else
     {
