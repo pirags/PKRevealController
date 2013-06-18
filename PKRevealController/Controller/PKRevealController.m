@@ -1531,7 +1531,7 @@ NS_INLINE void safelyExecuteBlockOnMainThread(void (^block)(void))
 
     if ([NSThread isMainThread])
     {
-        block();
+        executeBlock();
     }
     else
     {
