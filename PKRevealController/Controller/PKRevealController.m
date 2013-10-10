@@ -184,6 +184,7 @@ NSString * const PKRevealControllerWillPresentFrontViewNotification = @"PKReveal
     _frontViewController.revealController = self;
     _leftViewController.revealController = self;
     _rightViewController.revealController = self;
+    _statusBarStyle = UIStatusBarStyleLightContent;
 }
 
 #pragma mark - API
@@ -412,6 +413,11 @@ NSString * const PKRevealControllerWillPresentFrontViewNotification = @"PKReveal
     [self setupTapGestureRecognizer];
     
     [self addFrontViewControllerToHierarchy];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return self.statusBarStyle;
 }
 
 #pragma mark - View Lifecycle (Controller)
